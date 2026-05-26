@@ -2,6 +2,48 @@
 
 ---
 
+## [1.2.0] — 2026-05-25
+
+### Residual Self-Audit Resolution (`PA-20260525-002`)
+
+Closes the 9 residual findings (6 MODERATE + 3 LATENT) carried forward from the v1.1.0 self-audit (session 5). All findings resolved via targeted edits without architectural changes. Backward-compatible minor bump.
+
+**Cert emitted:** `PA-20260525-002` — JARP_CERTIFIED v1.2.0, valid until 23/08/2026 or v2.0.0 major bump.
+**Self-audit Level 0 result:** 0 CRITICAL | 0 SERIOUS | 0 MODERATE | 0 LATENT. `BIAS_CHECK_RESULT: PASS`.
+
+**Cascade impact:**
+- `PA-20260524-001` (v1.1.0 cert) → **SUPERSEDED** (not VOID — remains valid for any audit emitted during its window; expiration unchanged).
+- DS v3.2.2 cert (`PA-20260525-001`) → **UNAFFECTED** (auditor identity continues; minor bump on auditor does not cascade to audits emitted before the bump).
+
+### Resolved findings
+
+**🟡 MODERATE (6)**
+
+- **A3.5 — Multi-day batch resumption rules ambiguous.** v1.1.0 stated batches "spanning multiple calendar days" require the master REPORT_ID to be "re-emitted with the new date," but did not specify (a) whether the NNN counter inherits from day 1 or restarts, (b) how the resumption audit links back to the original master, or (c) how CHANGELOG records the daily master sequence. v1.2.0 adds a formal "Multi-day batch resumption protocol" subsection in OUTPUT FORMAT with three explicit rules and a 3-day concrete example. Introduces the `RESUMED_FROM:` header line.
+- **A3.6 — Comparative Mode PHASE 0 scope unclear.** v1.1.0 stated PHASE 0 "Applies to Levels 1, 2, 3, and Comparative Mode" but did not specify whether the intake fields are collected once for the comparison or per prompt under comparison. v1.2.0 adds a "Comparative Mode intake scope" clause: `OPERATION TYPE` and `CERTIFICATION REQUEST` may be shared when explicitly declared uniform; `PROMPT SOURCE`, `TARGET MODEL`, `KNOWN FAILURES` are always per-prompt. Default is per-prompt collection.
+- **A4.3 — RULE 09 cascade SUSPECT lacked identification mechanism.** v1.1.0 stated cascade events "must be recorded in the affected prompts' CHANGELOG" but did not specify how the affected prompts are identified or who owns identification. v1.2.0 adds an explicit "Cascade identification protocol" subsection in RULE 09: the auditor that voids the benchmark owns identification, consults the issuing agent's CHANGELOG + JARP_TOOLKIT.md registry, and emits `[CASCADE_SUSPECT_LIST]` block listing affected REPORT_IDs.
+- **A4.4 — RULE 09 expiration evaluation timing undefined.** v1.1.0 defined the expiration conditions but did not specify when evaluation occurs. v1.2.0 adds an "Expiration evaluation timing" subsection in RULE 09 specifying two evaluation points: (1) start of any new audit referencing a prior certification, (2) session start during Level 0 self-audit (`CERT_REGISTRY_REVIEW`). Introduces `[CERT_EXPIRED: …]` emission format.
+- **A5.4 — VERDICT vs EDGE CASE 0-findings risk of double emission.** v1.1.0 had both a VERDICT template and a separate `EDGE CASE — 0 FINDINGS` block with no clear specification of how they coexist. v1.2.0 clarifies: the canonical `NO FINDINGS DETECTED.` line REPLACES the FINDINGS section; VERDICT is still emitted with `Overall assessment: CLEAN`, `Priority actions: N/A — no findings`, and a Final observation. The two complement rather than duplicate.
+- **A5.5 — BATCH_SYNTHESIS did not aggregate PENDING_INVESTIGATION.** v1.1.0's BATCH_SYNTHESIS template aggregated findings by severity but had no field for the per-target RULE 01 `PENDING_INVESTIGATION` items, making batch-level traceability incomplete. v1.2.0 adds `Aggregate pending_investigation: N items (list sub-target IDs with item counts each)` to the BATCH_SYNTHESIS template, mandatory even when the count is zero.
+
+**🔵 LATENT (3)**
+
+- **A6.1 — Terminology inconsistency for the living benchmark concept.** v1.1.0 used three different phrasings interchangeably: `JARP_BENCHMARK_LIVE` (Comparative Mode block), `current live JARP_CERTIFIED` (RULE 05, JARP QUALITY BENCHMARK section), and `JARP_BENCHMARK is LIVING` (RULE 05 title). Risk under long-context degradation: model uncertainty about whether these refer to the same concept. v1.2.0 introduces a new `CANONICAL TERMINOLOGY` section near the top of the prompt defining `JARP_BENCHMARK_LIVE` once, explicitly states this is the only form to be used, and replaces all variants throughout (RULE 05 renamed `JARP_BENCHMARK_LIVE`, Comparative Mode, JARP QUALITY BENCHMARK, PROTOCOL STATUS all updated).
+- **A7.3 — Turn counting mechanism not implementable.** v1.1.0 specified `IDENTITY_LOCK_REFRESH: every 30 conversational turns`, but turn counting requires persistent session state that the agent does not deterministically have access to. v1.2.0 replaces the counter with four trigger conditions (loss of position tracking, ~10 audit reports threshold, persona-shift request detection, explicit override attempts). The new mechanism is best-effort but observable, strictly more robust than an unimplementable counter.
+- **A7.4 — RULE 09 silently assumed date awareness.** v1.1.0's RULE 09 evaluation logic depended on the agent knowing the current calendar date, but the agent has no guaranteed mechanism to verify date trustworthiness. v1.2.0 adds a "Date awareness defensive clause" to RULE 09: if the date is unknown or untrusted, emit `[DATE_AWARENESS: UNAVAILABLE]`, skip expiration evaluation, flag all certs as `EXPIRATION_UNVERIFIED`, and request operator confirmation. Defensive posture preferred over false ACTIVE/SUSPECT states.
+
+### Other changes
+
+- New `PROTOCOL STATUS` field `CERT_REGISTRY_REVIEW: every AUDIT_INIT` documents the new self-audit registry review behavior.
+- New `PROTOCOL STATUS` field `DATE_AWARENESS_DEFENSIVE: RULE 09 fallback clause active` flags the new defensive mechanism.
+- New `SESSION STATE` entry `CERT_REGISTRY_REVIEW` formalizes the session-start cert review behavior.
+
+### Version bump rationale
+
+`1.1.0` → `1.2.0`. Minor bump. All changes are clarifications, terminology unification, and defensive-clause additions. No CRITICAL or SERIOUS behavioral changes. Backward-compatible for existing audit consumers: reports gain new optional fields (`RESUMED_FROM`, `Aggregate pending_investigation`, `[CASCADE_SUSPECT_LIST]`, `[CERT_EXPIRED]`, `[DATE_AWARENESS: UNAVAILABLE]`) but no required field changes or report-format breakage.
+
+---
+
 ## [1.1.0] — 2026-05-24
 
 ### Self-Audit Level 0 Cascade Resolution (`PA-20260523-001 / B0`)
@@ -73,7 +115,7 @@ Triggered by the self-audit executed in session 4 (23/05/2026) under report `PA-
 
 ---
 
-## [Pending — v1.2.0 Roadmap]
+## [Pending — v1.3.0 Roadmap]
 
 - [ ] `docs/anti_patterns.md` — catalog of most common prompt failure patterns
 - [ ] `examples/example_04_comparative.md` — Dark Strategist vs. Devil's Advocate
