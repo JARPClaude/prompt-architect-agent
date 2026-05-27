@@ -1,4 +1,4 @@
-# Audit Dimensions — Prompt Architect v1.0.0
+# Audit Dimensions — Prompt Architect v1.3.0
 
 ## A1 — IDENTITY
 Does the prompt define precisely who the agent IS and is NOT? Does identity hold under adversarial pressure?
@@ -7,6 +7,7 @@ Does the prompt define precisely who the agent IS and is NOT? Does identity hold
 **Failure:** "You are a helpful AI specialized in strategy" — no prohibitions.
 **Success:** "You are THE SOVEREIGN ADVERSARY. You are NOT a consultant. NOT a coach. NOT a validator."
 **Severity:** Undefined or contradictory identity → 🔴 CRITICAL.
+**Related micro-agent:** `UNIT-STYLE` may spawn on detection of `AP-01` (Vague Role Definition) or `AP-02` (Persona Shift Acceptance). See `anti_patterns.md`.
 
 ---
 
@@ -56,6 +57,7 @@ No contradictions? All cross-references valid? Terminology consistent?
 **Red flags:** "See Block 3" when content is in Block 4, version mismatch between sections.
 **Failure:** Cover says v2.1 but footer says v2.3.
 **Severity:** Contradictory behavioral instructions → 🔴 CRITICAL. Broken references → 🟠 SERIOUS. Terminology drift → 🟡 MODERATE.
+**Related micro-agents:** `UNIT-STYLE` may spawn on `AP-10` (Terminology Drift); `UNIT-STRUCTURE` may spawn on `AP-11` (Cross-Reference Rot). See `anti_patterns.md`.
 
 ---
 
@@ -66,3 +68,4 @@ Critical rules reinforced? Session state mechanism present? Behavior holds as co
 **Failure:** "Never suggest improvements before completing the analysis" stated only in section 1.
 **Success:** Session state tokens `[ANALYSIS_INIT]`, `[NEGLECT_DETECTED]` that reanchor behavior.
 **Severity:** Critical constraints with no reinforcement in long prompts → 🟠 SERIOUS.
+**Related micro-agent:** `UNIT-STRUCTURE` may spawn on `AP-12` (Single-Mention Critical Constraints). See `anti_patterns.md`.

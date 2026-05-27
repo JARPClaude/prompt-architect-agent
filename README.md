@@ -4,7 +4,7 @@
 
 > *"You do not destroy what is wrong. You forge what must be right."*
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.3.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-ACTIVE-brightgreen)
 
@@ -16,7 +16,7 @@ THE PROMPT ARCHITECT is a forensic audit and design agent specialized in AI prom
 
 Its precision is cold. Its standards are absolute. Its certification means something.
 
-### Version 1.0.0 — Production Ready
+### Version 1.3.0 — Production Ready
 
 | Feature | Status |
 |---|---|
@@ -30,7 +30,9 @@ Its precision is cold. Its standards are absolute. Its certification means somet
 | Cross-Agent Comparative Mode | ✅ |
 | JARP_CERTIFIED Certification Protocol | ✅ |
 | REPORT_ID Convention (PA-AAAAMMDD-NNN) | ✅ |
-| 8 Invariable Behavioral Rules | ✅ |
+| 9 Invariable Behavioral Rules | ✅ |
+| Anti-Patterns Catalog (14 patterns mapped to A1–A7) | ✅ |
+| Micro-Agents Framework (UNIT-STYLE, UNIT-STRUCTURE — on-demand) | ✅ |
 
 ---
 
@@ -41,17 +43,20 @@ prompt-architect-agent/
 ├── README.md
 ├── CLAUDE.md
 ├── CHANGELOG.md
+├── LICENSE
 ├── prompts/
 │   └── system_prompt.md          ← Production-ready system prompt (EN)
 ├── docs/
 │   ├── audit_dimensions.md       ← 7 audit axes with examples
+│   ├── anti_patterns.md          ← 14 prompt failure patterns (NEW in v1.3.0)
 │   ├── certification_protocol.md ← JARP_CERTIFIED protocol
 │   ├── operational_levels.md     ← Levels 0–3 + Comparative + Certification
 │   └── jarp_benchmark.md         ← JARP ecosystem quality standard
 └── examples/
     ├── example_01_self_audit.md  ← Self-audit of the agent itself
     ├── example_02_jarp_deep.md   ← Full audit of dark-strategist-agent
-    └── example_03_universal.md   ← Audit of an external prompt
+    ├── example_03_universal.md   ← Audit of an external prompt
+    └── example_04_comparative.md ← Comparative Mode: DS vs Devil's Advocate (NEW in v1.3.0)
 ```
 
 ---
@@ -72,7 +77,7 @@ with open("prompts/system_prompt.md", "r", encoding="utf-8") as f:
 
 client = anthropic.Anthropic()
 response = client.messages.create(
-    model="claude-opus-4-6",
+    model="claude-opus-4-7",
     max_tokens=8192,
     system=system,
     messages=[{"role": "user", "content": "Audit this prompt: [PASTE PROMPT]"}]
@@ -106,6 +111,19 @@ print(response.content[0].text)
 
 ---
 
+## Micro-Agents (v1.3.0)
+
+On-demand sub-protocols spawned during Level 1/2/3 audits when explicit triggers fire. Never spawn in Level 0 self-audit unless explicitly invoked by the operator.
+
+| Micro-Agent | Audits | Triggers |
+|---|---|---|
+| `UNIT-STYLE` | Voice, register, identity-tone, qualifier precision | `AP-01`, `AP-02`, `AP-10`, prompt >3000 words, explicit |
+| `UNIT-STRUCTURE` | Section flow, x-references, hierarchy, reinforcement vs repetition | `AP-11`, `AP-12`, prompt >4000 words, explicit |
+
+Both emit a mandatory marker in every Level 1/2/3 audit — `SUMMARY` (with findings), `CLEAN` (spawned, no findings), or `NOT_SPAWNED` (no trigger fired). See `prompts/system_prompt.md` → MICRO-AGENTS section.
+
+---
+
 ## Relationship with Dark Strategist
 
 ```
@@ -129,7 +147,7 @@ The Dark Strategist can audit proposals that include the Prompt Architect.
 ## JARP Certification
 
 ```
-[JARP_CERTIFIED: v1.0.0 — PA-AAAAMMDD-NNN]
+[JARP_CERTIFIED: v1.3.0 — PA-AAAAMMDD-NNN]
 [AUDIT_DATE: AAAA-MM-DD]
 [AUDITOR: THE PROMPT ARCHITECT]
 [FINDINGS: 0 CRITICAL | 0 SERIOUS | N MODERATE | N LATENT]

@@ -2,6 +2,71 @@
 
 ---
 
+## [1.3.0] — 2026-05-27
+
+### Sprint v1.3.0 — Anti-Patterns Catalog + Micro-Agents Framework
+
+Closes the v1.3.0 roadmap items declared in v1.2.0 CHANGELOG. Introduces three structural additions to the framework: an anti-patterns catalog, an on-demand micro-agents framework, and a comparative-mode example. All deliverables certified.
+
+**Cert emitted:** `PA-20260527-002` — JARP_CERTIFIED v1.3.0, valid until 25/08/2026 or v2.0.0 major bump.
+**Self-audit Level 0 result:** First pass (`PA-20260527-001`): 0 CRITICAL | 1 SERIOUS | 2 MODERATE | 1 LATENT → `CERTIFICATION_DENIED`. After surgical fix iteration: 0 CRITICAL | 0 SERIOUS | 0 MODERATE | 0 LATENT → `JARP_CERTIFIED`. `BIAS_CHECK_RESULT: PASS` on both audits.
+
+**Cascade impact:**
+- `PA-20260525-002` (v1.2.0 cert) → **SUPERSEDED** (not VOID — remains valid for audits emitted during its window 25/05 → 27/05; expiration unchanged).
+- DS v3.2.2 cert (`PA-20260525-001`) → **UNAFFECTED** (auditor minor bump does not cascade — convention formalized in session 7; re-audit of DS under v1.3.0 not required).
+
+### New deliverables
+
+**`docs/anti_patterns.md` (NEW)**
+
+A catalog of 14 recurring prompt failure patterns mapped 1:1 to the 7-Axis Forensic Framework + 1 cross-axis pattern (Level 0 specific). Each pattern documented with: Maps to, Co-occurs with, Description, Red flags, Failure example, Success example (fix), Severity (typical), References. Distribution by axis: A1 (AP-01, AP-02), A2 (AP-03), A3 (AP-04, AP-05), A4 (AP-06, AP-07), A5 (AP-08, AP-09), A6 (AP-10, AP-11), A7 (AP-12, AP-13), Cross-axis (AP-14). Includes dual indices (by axis, by typical severity), provenance section (general patterns vs PA-agent-specific findings), and maintenance policy (append-only IDs, deprecation allowed, IDs never reused).
+
+8 of the 14 patterns cite real findings from the PA-agent's own self-audit history (v1.0.0 → v1.1.0 → v1.2.0). The catalog is referenced by both micro-agents (UNIT-STYLE, UNIT-STRUCTURE) as their detection vocabulary, and is the target of the new optional `ANTI-PATTERN:` field in standard findings.
+
+**Micro-agents framework (NEW)**
+
+On-demand sub-protocols invoked during Level 1/2/3 audits when specific triggers fire. Never spawned in Level 0 self-audit unless explicitly invoked via `[INVOKE: UNIT-X]`. Each micro-agent emits a mandatory marker (`SUMMARY`, `CLEAN`, or `NOT_SPAWNED`) in every Level 1/2/3 audit for traceability. Sub-blocks positioned between FINDINGS and VERDICT in registry order.
+
+- **`UNIT-STYLE`** — tone and voice consistency audit. 4 dimensions: voice consistency, register consistency, identity-tone alignment, qualifier precision. Triggers: AP-01/AP-02/AP-10 detection, prompt >3000 words, or explicit invocation. Anti-patterns referenced: AP-01, AP-02, AP-03, AP-10. Subjectivity guard requires mandatory `ANTI-PATTERN:` field citation; patterns not mapping to a catalogued anti-pattern emit `PENDING_INVESTIGATION` instead of findings.
+- **`UNIT-STRUCTURE`** — architectural coherence audit. 4 dimensions: section flow, cross-reference integrity, hierarchy balance, reinforcement vs repetition. Triggers: AP-11/AP-12 detection, prompt >4000 words, or explicit invocation. Anti-patterns referenced: AP-10, AP-11, AP-12, AP-14. Subjectivity guard restricts dimension 4 findings to terminological-variant repetition only (AP-10 mapping); identical-term repetition is assumed legitimate reinforcement.
+
+**`examples/example_04_comparative.md` (NEW)**
+
+Comparative Mode end-to-end audit pitting Dark Strategist v3.2.2 (JARP_BENCHMARK_LIVE) vs Devil's Advocate. Demonstrates: PHASE 0 intake scope rule (v1.2.0) in action, asymmetric BATCH verdict (`PARTIAL`), 0-findings handling for clean audits (DS), micro-agent NOT_SPAWNED markers for short prompts (DA below size thresholds), `JARP_BENCHMARK_LIVE` as comparative baseline. Findings explicitly disclaimed as illustrative. Closes with 6 didactic notes mapping each output element to its CHANGELOG provenance (v1.1.0, v1.2.0, v1.3.0).
+
+### Cross-references and collateral updates
+
+- **`docs/audit_dimensions.md`** — A1, A6, A7 entries updated to reference the new micro-agents (UNIT-STYLE spawn on A1/A6 anti-patterns; UNIT-STRUCTURE spawn on A6/A7 anti-patterns).
+- **`README.md`** — Badge updated to `version-1.3.0`. Production Ready table extended with new features (anti_patterns.md, micro-agents framework). Examples list updated to include `example_04_comparative.md`. New `Micro-Agents (v1.3.0)` section added with trigger-condition summary table.
+- **`prompts/system_prompt.md`** — HEADER `Version: 1.3.0`. New `MICRO-AGENTS (on-demand)` section between `JARP QUALITY BENCHMARK` and `PROTOCOL STATUS`. New `SESSION STATE` entry `MICRO_AGENT_REGISTRY`. New OUTPUT FORMAT sub-section `Micro-Agent Sub-Block Positioning`. EDGE CASE — 0 FINDINGS extended with micro-agent persistence rule (point 4). FINDING FORMAT template extended with optional `ANTI-PATTERN:` field. PROTOCOL STATUS line `[MICRO_AGENTS_AVAILABLE: UNIT-STYLE, UNIT-STRUCTURE]` added.
+
+### Resolved findings (self-audit iteration on v1.3.0)
+
+The first self-audit pass (`PA-20260527-001`) found 4 findings and emitted `CERTIFICATION_DENIED`. All 4 resolved in a single fix iteration; re-audit (`PA-20260527-002`) clean. Both audits passed `BIAS_CHECK_RESULT: PASS`.
+
+**🟠 SERIOUS (1)**
+
+- **A6.2 — EDGE CASE — 0 FINDINGS point 4 contained self-contradicting clause.** The clause "Any spawned micro-agent (UNIT-STYLE, etc.) still emits its summary or [UNIT-X: CLEAN] / [UNIT-X: NOT_SPAWNED] marker" was logically self-contradictory under strict reading — a "spawned" micro-agent cannot emit `NOT_SPAWNED`. Rewritten as: "Each micro-agent in the registry emits its sub-block — `SUMMARY` (when spawned, with findings), `[UNIT-X: CLEAN]` (when spawned, no findings), or `[UNIT-X: NOT_SPAWNED]` (when no trigger fired) — between the canonical 'NO FINDINGS DETECTED' line and the VERDICT. Emission is independent of overall finding count and of individual spawn status." Maps to AP-04 (Ambiguous Conditionals applied to output specs).
+
+**🟡 MODERATE (2)**
+
+- **A3.7 — CERT_REGISTRY_REVIEW silently depended on infrastructure not declared.** v1.2.0 introduced `CERT_REGISTRY_REVIEW` but did not declare the read sources or handle inaccessibility (e.g., `claude.ai` web sessions without filesystem MCP, or sessions without project context). v1.3.0 extends the SESSION STATE entry: declares `CHANGELOG.md` of the issuing agent + `JARP_TOOLKIT.md` registry as cert state sources; adds defensive clause symmetric to the date awareness clause — `[CERT_REGISTRY: UNAVAILABLE]` emission, skip evaluation, `REGISTRY_UNVERIFIED` flag on all referenced certs, operator confirmation required before any expiration-dependent operation. Maps to AP-07 (Unenforceable Rules — dependency on capabilities the agent does not always possess).
+- **A5.6 — Standard FINDING FORMAT lacked ANTI-PATTERN field while micro-agent findings required it.** The standard FINDING FORMAT had 4 required fields (LOCATION, MECHANISM, FAILURE SCENARIO, RECOMMENDATION). Micro-agent subjectivity guards required ANTI-PATTERN citation, but the standard template was not updated to reflect the new convention. v1.3.0 extends FINDING FORMAT with optional `ANTI-PATTERN:` field: MANDATORY for micro-agent findings, RECOMMENDED for standard findings when a catalogued pattern applies, OMITTED entirely when no anti-pattern citation is applicable (no empty field emission). Both UNIT-STYLE and UNIT-STRUCTURE subjectivity guards updated to reference the now-mandatory field. Maps to AP-09 (Missing Edge Case Handling applied to "finding references an anti-pattern").
+
+**🔵 LATENT (1)**
+
+- **A6.3 — PROTOCOL STATUS hardcoded JARP_BENCHMARK_LIVE version while RULE 05 forbids locking.** RULE 05 explicitly forbids "lock[ing] the benchmark to a frozen version number," but PROTOCOL STATUS hardcoded `dark-strategist-agent v3.2.2 (PA-20260525-001)`. CANONICAL TERMINOLOGY defines `JARP_BENCHMARK_LIVE` dynamically (the most recently `JARP_CERTIFIED` DS version), but the snapshot-vs-runtime distinction was not stated in the prompt. v1.3.0 adds a preamble paragraph above the PROTOCOL STATUS block explaining the line is a snapshot at prompt-issue date; runtime value follows CANONICAL TERMINOLOGY. The PROTOCOL STATUS line itself updated with `— snapshot at v1.3.0 prompt-issue` annotation. Maps to AP-10 (Terminology Drift applied to dynamic-vs-static benchmark reference).
+
+### Version bump rationale
+
+`1.2.0` → `1.3.0`. Minor bump. New features (anti_patterns.md, micro-agents framework, example_04) plus 4 resolved findings from the self-audit iteration. No CRITICAL behavioral changes. Backward-compatible for existing audit consumers: reports gain new optional fields (`ANTI-PATTERN:`, `[CERT_REGISTRY: UNAVAILABLE]`, `REGISTRY_UNVERIFIED`, `[UNIT-X: CLEAN]` / `[UNIT-X: NOT_SPAWNED]` markers) but no required field changes or report-format breakage. The mandatory `ANTI-PATTERN:` field for micro-agent findings is a new requirement scoped to the new micro-agent outputs — does not affect existing standard findings.
+
+### Pending — v1.4.0 Roadmap
+
+No items formally declared at v1.3.0 release. Roadmap to be determined by JARP operational priorities post-v1.3.0.
+
+---
+
 ## [1.2.0] — 2026-05-25
 
 ### Residual Self-Audit Resolution (`PA-20260525-002`)
@@ -112,12 +177,3 @@ Triggered by the self-audit executed in session 4 (23/05/2026) under report `PA-
 **REPORT_ID:** `PA-AAAAMMDD-NNN`
 
 **Certification status as of v1.1.0:** `PA-20260426-001` is **VOID** (cascade from self-audit B0). See `[1.1.0]` block above.
-
----
-
-## [Pending — v1.3.0 Roadmap]
-
-- [ ] `docs/anti_patterns.md` — catalog of most common prompt failure patterns
-- [ ] `examples/example_04_comparative.md` — Dark Strategist vs. Devil's Advocate
-- [ ] UNIT-STYLE micro-agent — tone and voice consistency audit
-- [ ] UNIT-STRUCTURE micro-agent — architectural coherence of long system prompts
