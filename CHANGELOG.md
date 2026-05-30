@@ -2,7 +2,20 @@
 
 ---
 
+## [Audit Activity] — 2026-05-29
+
+### DS v3.3.0 full-coverage certification executed (PA-20260529-001)
+
+The Prompt Architect (v1.3.0) executed a Level 1 — JARP DEEP full-coverage 7-axis forensic audit of `dark-strategist-agent` v3.3.0 (21 prompts + 5 skills + orchestrator product-face + docs; 19/19 domain variants). Result: 0 CRITICAL | 0 SERIOUS | 0 MODERATE | 0 LATENT → `JARP_CERTIFIED`. `BIAS_CHECK_RESULT: PASS`.
+
+**Cert emitted:** `PA-20260529-001` — DS v3.3.0, valid until 27/08/2026 or DS v4.0.0 major bump. Supersedes `PA-20260525-001` (DS v3.2.2, reduced 47% conformance).
+
+This agent's own version is unchanged (remains v1.3.0 / `PA-20260527-002`). Logged here for auditor-side traceability; full audit detail lives in the `dark-strategist-agent` CHANGELOG `[Certification] — 2026-05-29` block.
+
+---
+
 ## [1.3.0] — 2026-05-27
+
 
 ### Sprint v1.3.0 — Anti-Patterns Catalog + Micro-Agents Framework
 
